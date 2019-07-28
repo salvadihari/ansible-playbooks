@@ -1,0 +1,25 @@
+
+
+---
+- hosts: localhost
+  become: true
+  tasks:
+  - name: clone git repo 
+    git: 
+      repo: https://github.com/salvadihari/cargotracker.git
+      dest: /home/hps/GIT/cargo/
+      update: yes
+      version: master
+  - name: packing the maven build
+    shell: "mvn clean package"
+    args: 
+      chdir: /home/hps/GIT/cargo/
+  - name: copy artifacts to tomcat
+    copy: 
+      src: /home/hps/GIT/cargo/target/cargo-tracker-1.0.war
+      dest: /opt/tomcat/apache-tomcat-7.0.93/webapps/
+  - name: restart tomcat service
+    service:
+      name: tomcat
+      state: restarted
+
