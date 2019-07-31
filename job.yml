@@ -23,3 +23,242 @@
       name: tomcat
       state: restarted
 
+     
+ ============= Create multiple directories using with_items================
+
+
+- hosts: all
+  tasks:
+  - name: ansible create multiple directory example
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+      - '/tmp/devops_system1'
+      - '/tmp/devops_system2'
+      - '/tmp/devops_system3'
+
+
+
+
+==== ======= Create multiple directories using with_items=============
+
+
+        - hosts: all
+  tasks:
+  - name: ansible create directory with_items example
+    file:
+      path: "{{ item.dest }}"
+      mode: "{{item.mode}}"
+      state: directory
+    with_items:
+      - { dest: '/tmp/devops_system1', mode: '0777'}
+      - { dest: '/tmp/devops_system2', mode: '0707'}
+      - { dest: '/tmp/devops_system3', mode: '0575'}
+
+
+
+===============Adding a line to the start of a file in Ansible============
+
+
+Input.txt
+---------
+Existing line
+
+Script
+------
+- hosts: all
+  tasks:
+    - name: line insert
+      lineinfile:
+        path: /Users/mdtutorials2/Documents/Ansible/Input.txt
+        line: 'Added Line 1'
+        insertbefore: BOF
+
+Input.txt after execution
+-------------------------
+Added Line 1
+Existing line
+
+
+=================Adding a line to the end of a file in Ansible=============
+
+last.txt
+--------
+first
+second
+
+script
+------
+- hosts: all
+  tasks:
+    - name: Insert a line at the end of a file.
+      lineinfile:
+        path: /Users/mdtutorials2/Documents/Ansible/line.txt
+        line: last
+
+last.txt after execution
+------------------------
+first
+second
+last
+
+============Inserting a line after a pattern/line in Ansible===================
+
+
+.bashrc
+-------
+#user aliases for common commands
+alias c='clear'
+alias grep='grep --color=auto'
+
+JAVA_HOME=/usr/lib/jvm/jdk1.7.0
+export JAVA_HOME
+
+Ansible script
+--------------
+- hosts: all
+  tasks:
+    - name: Inserting a line after a pattern in Ansible example
+      lineinfile:
+        path: ~/.bashrc
+        line: alias ll='ls -lhA'
+        insertafter: alias.*
+
+.bashrc after execution
+-----------------------
+#user aliases for common commands
+alias c='clear'
+alias grep='grep --color=auto'
+alias ll='ls -lhA'
+
+JAVA_HOME=/usr/lib/jvm/jdk1.7.0
+export JAVA_HOME
+
+===========Inserting a line Before a pattern/line=============
+
+
+/etc/hosts
+----------
+127.0.0.1 localhost
+127.0.1.1 ubuntu
+64.49.219.194 domain.com
+
+Ansible script
+--------------
+ hosts: all
+  tasks:
+    - name: Ansible insert a line before example
+      lineinfile:
+        path: /etc/hosts
+        line: '0.0.0.0 facebook.com'
+        insertbefore: .*domain.com
+
+/etc/hosts after execution
+--------------------------
+127.0.0.1 localhost
+127.0.1.1 ubuntu
+0.0.0.0 facebook.com
+64.49.219.194 domain.com
+
+=============The following task replaces all lines which have ‘This line should be commented===========
+
+
+Input.txt
+=========
+Hello,How are you?
+This line should be commented
+This line should be commented
+
+- hosts: all
+  tasks:
+  - name: Exampel of commenting a line in Ansible.
+    replace:
+      path: /Users/mdtutorials/Documents/Ansible/Input.txt
+      regexp: 'This line should be'
+      replace: '#This line should be'
+
+Input.txt after execution
+=========================
+Hello,How are you?
+#This line should be commented
+#This line should be commented
+
+
+===========Commenting every line having a particular pattern=============
+
+
+Input.txt
+
+---------
+
+Hello,How are you?
+The following are US based google servers
+127.0.0.1
+The following are UK based google servers
+127.0.0.1
+
+ hosts: all
+  tasks:
+  - name: Commenting a line using the regualr expressions in Ansible.
+    replace:
+      path: /Users/mdtutorials/Documents/Ansible/Input.txt
+      regexp: '(.*google server.*)'
+      replace: '#\1'
+
+Input.txt after execution
+-------------------------
+Hello,How are you?
+#The following are US based google servers
+127.0.0.1
+#The following are UK based google servers
+127.0.0.1
+
+=============Uncommenting a line in Ansible using the replace module==============
+
+input.txt
+----------
+Hello,How are you?
+#Uncomment this line
+#Also, Uncomment this line
+
+- hosts: all
+  tasks:
+  - name: Ansible delete file glob
+    replace:
+      path: /Users/mdtutorials/Documents/Ansible/Input.txt
+      regexp: '^#(.*Uncomment this line.*)'
+      replace: '\1'
+
+input.txt after execution
+-------------------------
+Hello,How are you?
+Uncomment this line
+Also, Uncomment this line
+
+===========Ansible zip file==========
+
+- hosts: all
+  tasks:
+  - name: Ansible zip file with path example
+    archive:
+      path: /Users/mdtutorials2/Documents/Ansible/zipfile.txt
+      dest: /Users/mdtutorials2/Documents/zipfile2.zip
+      format: zip
+
+
+=============Ansible zip multiple files============
+
+- hosts: all
+  tasks:
+  - name: Ansible zip multiple files example
+    archive:
+      path:
+        - /Users/mdtutorials2/Documents/Ansible/zipfile.txt
+        - /Users/mdtutorials2/Documents/Ansible/zipfile2.txt
+        - /Users/mdtutorials2/Documents/Ansible/zipfile3.txt
+      dest: /Users/mdtutorials2/Documents/multi.zip
+      format: zip
+
+
+
